@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+//Bill list
+
 const billStore=createSlice({
     name:'bill',
     initialState:{
