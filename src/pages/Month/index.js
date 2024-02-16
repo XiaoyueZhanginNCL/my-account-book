@@ -8,22 +8,46 @@ import _ from 'lodash'
 
 const Month = () => {
 
-    //控制时间选择器的弹出
+//控制时间选择器的弹出
 const [dateVisible,setDateVisible]=useState(false);
 
 //在时间选择器上点击的内容
-const [currentDate,setCurrentDate]=useState(dayjs(new Date()).format('YYYY/MM'));
+const [currentDate,setCurrentDate]=useState(()=>{ return dayjs(new Date()).format('YYYY-MM')});
 
-function onConfirm(date){
-    setDateVisible(false);
-    setCurrentDate(dayjs(date).format('YYYY/MM'));
-}
+//monthBillList中选择的月份的数据
+const [currentMonthList,setCurrentMonthList]=useState([]);
 
 const {billList} = useSelector(state=>state.bill);
+
+//billList按月分组
 const monthBillList = useMemo(()=>{
-    return _.groupBy(billList,(item)=>{return dayjs(item.date).format('YYYY/MM')})
+    return _.groupBy(billList,(item)=>{return dayjs(item.date).format('YYYY-MM')})
 },[billList])
-console.log(monthBillList);
+
+//点击确认
+function onConfirm(date){
+    setDateVisible(false);
+    const formatDate=dayjs(date).format('YYYY-MM')
+    setCurrentDate(formatDate);
+    setCurrentMonthList(monthBillList[formatDate]);
+    
+}
+
+
+
+const monthResult=useMemo(()=>{
+    //计算收入
+    const incomeArr = currentMonthList.filter(item=> item.type==='income' );
+    const income=incomeArr.reduce((a,c)=>{ return a+c.money},0);
+    //计算支出
+    const pay = currentMonthList.filter((item)=>{ return item.type==='pay' }).reduce((a,c)=>{ return a+c.money},0);
+    const total=income+pay;
+    return{
+        income,
+        pay,
+        total
+    }
+},[currentMonthList]);
 
   return (
     <div className="monthlyBill">
@@ -42,15 +66,15 @@ console.log(monthBillList);
           {/* 统计区域 */}
           <div className='twoLineOverview'>
             <div className="item">
-              <span className="money">{100}</span>
+              <span className="money">{monthResult.pay}</span>
               <span className="type">支出</span>
             </div>
             <div className="item">
-              <span className="money">{200}</span>
+              <span className="money">{monthResult.income}</span>
               <span className="type">收入</span>
             </div>
             <div className="item">
-              <span className="money">{200}</span>
+              <span className="money">{monthResult.total}</span>
               <span className="type">结余</span>
             </div>
           </div>
