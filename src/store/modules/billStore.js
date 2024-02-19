@@ -20,9 +20,14 @@ const billReducer=billStore.reducer
 const {setBillList}=billStore.actions
 const getBillList=()=>{
     return async(dispatch)=>{
-        const res= await axios.get('http://localhost:8888/ka');
-        dispatch(setBillList(res.data))
+        try {
+            const res = await axios.get('http://localhost:8888/ka');
+            dispatch(setBillList(res.data));
+        } catch (error) {
+            console.error("Error fetching bill list:", error);
+        
     }
+}
 }
 
 export {setBillList,getBillList}

@@ -1,6 +1,6 @@
 import { NavBar, DatePicker } from 'antd-mobile'
 import './index.scss'
-import { useState,useMemo } from 'react'
+import { useState,useMemo, useEffect } from 'react'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { useSelector } from 'react-redux'
@@ -14,15 +14,15 @@ const [dateVisible,setDateVisible]=useState(false);
 //在时间选择器上点击的内容
 const [currentDate,setCurrentDate]=useState(()=>{ return dayjs(new Date()).format('YYYY-MM')});
 
-//monthBillList中选择的月份的数据
-const [currentMonthList,setCurrentMonthList]=useState([]);
-
 const {billList} = useSelector(state=>state.bill);
 
 //billList按月分组
 const monthBillList = useMemo(()=>{
     return _.groupBy(billList,(item)=>{return dayjs(item.date).format('YYYY-MM')})
 },[billList])
+
+//monthBillList中选择的月份的数据
+const [currentMonthList,setCurrentMonthList]=useState([]);
 
 //点击确认
 function onConfirm(date){
@@ -33,8 +33,7 @@ function onConfirm(date){
     
 }
 
-
-
+//统计区域的数值计算
 const monthResult=useMemo(()=>{
     //计算收入
     const incomeArr = currentMonthList.filter(item=> item.type==='income' );
@@ -48,6 +47,15 @@ const monthResult=useMemo(()=>{
         total
     }
 },[currentMonthList]);
+
+//初始化的时候把当前月份的数据渲染出来
+useEffect(()=>{
+    const nowDate=dayjs().format('YYYY-MM');
+    if(monthBillList[nowDate]){//因为monthBillList的值根据billList，而billList获取数据的请求是异步的，所以初次渲染时billList为undefined，需要加条件判断，只有当获取到数据时才进行更新
+      setCurrentMonthList(monthBillList[nowDate]);
+    }
+},[monthBillList])
+
 
   return (
     <div className="monthlyBill">
