@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import './index.scss'
 import { useMemo,useState } from 'react';
+import Icon from '@/components/Icon';
 
 const DailyBill = ({date,billList}) => {
 //每日统计区域计算
@@ -48,6 +49,7 @@ const [visible,setVisible]=useState(false);
         {billList.map(item => {
           return (
             <div className="bill" key={item.id}>
+              <Icon type={item.useFor} />
               <div className="detail">
                 <div className="billType">{item.useFor}</div>
               </div>
