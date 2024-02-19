@@ -9,8 +9,26 @@ import { useState } from 'react'
 const New = () => {
   const navigate = useNavigate()
 
-  //控制列表类型
+  //切换列表类型
   const [billType,setBillType]=useState('pay');
+
+  const [money,setMoney]=useState(0);
+
+  const [useFor,setUseFor]=useState('');
+
+  //点击保存按钮时
+  function addList(){
+     
+    const data={
+        type:billType,
+        money:billType==='pay'? -money: +money,
+        date:new Date(),
+        useFor: useFor
+     }
+    
+
+     console.log(data);
+  }
 
   return (
     <div className="keepAccounts">
@@ -52,6 +70,8 @@ const New = () => {
                 className="input"
                 placeholder="0.00"
                 type="number"
+                value={money}
+                onChange={(value)=>{setMoney(value)}}
               />
               <span className="iconYuan">¥</span>
             </div>
@@ -73,7 +93,7 @@ const New = () => {
                         ''
                       )}
                       key={item.type}
-
+                      onClick={()=>{setUseFor(item.type)}}
                     >
                       <div className="icon">
                         <Icon type={item.type} />
@@ -89,7 +109,9 @@ const New = () => {
       </div>
 
       <div className="btns">
-        <Button className="btn save">
+        <Button className="btn save"
+        onClick={addList}
+         >
           保 存
         </Button>
       </div>
