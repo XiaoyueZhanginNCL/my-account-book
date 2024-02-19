@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { useSelector } from 'react-redux'
 import _ from 'lodash'
+import DailyBill from './DayBill'
 
 const Month = () => {
 
@@ -24,6 +25,17 @@ const monthBillList = useMemo(()=>{
 //monthBillList中选择的月份的数据
 const [currentMonthList,setCurrentMonthList]=useState([]);
 
+//按日分组
+const dayBillList = useMemo(()=>{
+  const dayList=_.groupBy(currentMonthList,(item)=>{return dayjs(item.date).format('YYYY-MM-DD')})
+  const keys=Object.keys(dayList);
+  return {
+    keys,
+    dayList
+  }
+},[currentMonthList])
+
+
 //点击确认
 function onConfirm(date){
     setDateVisible(false);
@@ -33,7 +45,7 @@ function onConfirm(date){
     
 }
 
-//统计区域的数值计算
+//月度统计区域的数值计算
 const monthResult=useMemo(()=>{
     //计算收入
     const incomeArr = currentMonthList.filter(item=> item.type==='income' );
@@ -99,6 +111,9 @@ useEffect(()=>{
             onConfirm={onConfirm}
           />
         </div>
+        {dayBillList.keys.map((key)=>{
+          return <DailyBill key={key} date={key} billList={dayBillList.dayList[key]}/>
+        })}
       </div>
     </div >
   )
