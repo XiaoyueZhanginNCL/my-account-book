@@ -5,9 +5,12 @@ import classNames from 'classnames'
 import { billListData } from '@/contants'
 import { useNavigate} from 'react-router-dom'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { addBillList } from '@/store/modules/billStore'
 
 const New = () => {
   const navigate = useNavigate()
+  const dispatch=useDispatch()
 
   //切换列表类型
   const [billType,setBillType]=useState('pay');
@@ -26,8 +29,9 @@ const New = () => {
         useFor: useFor
      }
     
+     dispatch(addBillList(data));
 
-     console.log(data);
+    //  console.log(data);
   }
 
   return (
