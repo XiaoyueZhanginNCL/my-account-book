@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import './index.scss'
-import { useMemo } from 'react';
+import { useMemo,useState } from 'react';
 
 const DailyBill = ({date,billList}) => {
-  //每日统计区域计算
+//每日统计区域计算
 const dayResult=useMemo(()=>{
   //计算收入
   const income = billList.filter(item=> item.type==='income' ).reduce((a,c)=>{ return a+c.money},0);
@@ -17,13 +17,16 @@ const dayResult=useMemo(()=>{
   }
 },[billList]);
 
+//控制列表区域是否显示
+const [visible,setVisible]=useState(false);
+
 
   return (
     <div className={classNames('dailyBill')}>
       <div className="header">
         <div className="dateIcon">
           <span className="date">{date}</span>
-          <span className={classNames('arrow')}></span>
+          <span className={classNames('arrow',visible && 'expand')} onClick={()=>{setVisible(!visible)}}></span>
         </div>
         <div className="oneLineOverview">
           <div className="pay">
@@ -39,6 +42,21 @@ const dayResult=useMemo(()=>{
             <span className="type">结余</span>
           </div>
         </div>
+      </div>
+       {/* 单日列表 */}
+      <div className="billList" style={{display:visible?'block':'none'}}>
+        {billList.map(item => {
+          return (
+            <div className="bill" key={item.id}>
+              <div className="detail">
+                <div className="billType">{item.useFor}</div>
+              </div>
+              <div className={classNames('money', item.type)}>
+                {item.money.toFixed(2)}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
